@@ -19,13 +19,14 @@ func getLineChannels(f io.ReadCloser) <-chan string {
 		defer close(strChan)
 		for {
 			n, err := f.Read(b)
-			if errors.Is(err, io.EOF) {
-				break
-			} else if err != nil {
+			if err != nil {
 				if line != "" {
 					strChan <- line
 				}
-				fmt.Print(err)
+				if errors.Is(err, io.EOF) {
+					break
+				}
+				fmt.Println(err)
 				return
 			}
 			str := string(b[:n])
